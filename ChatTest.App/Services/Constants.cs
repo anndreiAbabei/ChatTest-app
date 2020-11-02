@@ -15,6 +15,7 @@ namespace ChatTest.App.Services
             {
                 Guid.NewGuid(),
                 Guid.NewGuid(),
+                Guid.NewGuid(),
                 Guid.NewGuid()
             };
 
@@ -22,7 +23,8 @@ namespace ChatTest.App.Services
             {
                 "lieethiopian",
                 "sloppycareer",
-                "decorplummer"
+                "decorplummer",
+                "flusteredfive",
             };
         }
     }

@@ -166,6 +166,18 @@ namespace ChatTest.App.Services
                                                     Constants.Mock.UserNames[2]
                                                 }
                              });
+
+                    list.Add(new Conversation
+                             {
+                                 Id = Constants.Mock.ConversationIds[3],
+                                 CreatedAt = DateTime.UtcNow,
+                                 CreatedBy = Constants.Mock.UserNames[1],
+                                 Participants = new []
+                                                {
+                                                    Constants.Mock.UserNames[1],
+                                                    Constants.Mock.UserNames[3]
+                                                }
+                             });
                 }
                 _cache.Set<IList<Conversation>>(ConversationsCacheKey, list);
             }
