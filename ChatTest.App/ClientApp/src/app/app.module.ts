@@ -14,6 +14,9 @@ import { SearchPipe } from './pipes/search.pipe';
 import { ApiService } from './services/api.service';
 import { UserService } from './services/user.service';
 import { CookieService } from './services/cookie.service';
+import { ConversationService } from './services/conversation.service';
+import { MessagesService } from './services/messages.service';
+import { HubService } from './services/hub.service';
 
 @NgModule({
   declarations: [
@@ -33,13 +36,16 @@ import { CookieService } from './services/cookie.service';
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'counter', component: CounterComponent },
       { path: 'fetch-data', component: FetchDataComponent },
-      { path: 'chat', component: ChatComponent },
+      { path: 'chat', component: ChatComponent }
     ])
   ],
   providers: [
     ApiService,
     UserService,
-    CookieService
+    CookieService,
+    ConversationService,
+    MessagesService,
+    HubService
   ],
   bootstrap: [AppComponent]
 })

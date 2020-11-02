@@ -3,7 +3,7 @@
     <h2 class="header">Conversations</h2>
     <button class="btn btn-default add-conversation" type="button">+</button>
     <div class="input-group search">
-      <input class="form-control" type="text" placeholder="Search conversations..." [(ngModel)]="search"/>
+      <input class="form-control" type="text" placeholder="Search conversations..." [(ngModel)]="search" />
       <button class="btn bg-transparent clear" (click)="search = ''" [disabled]="!search || search.trim().length === 0">
         <span class="fas fa-times"></span>
       </button>
@@ -28,16 +28,38 @@
       </ng-template>
     </div>
   </div>
-  <div class="chats col-md-9" [ngClass]="{'online': selConv && selConv.online}">
-    <h2 class="header" *ngIf="selConv">{{selConv.name}} messages</h2>
+  <div class="chats col-md-9"
+       [ngClass]="{'online': selConv && selConv.online}"
+       *ngIf="selConv; else noConvSel">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-10">
+          <h2 class="header" *ngIf="selConv">{{selConv.name}} messages</h2>
+        </div>
+        <div class="col-md-1">
+          <button class="btn bg-transparent clear" (click)="videoCall()">
+            <span class="fas fa-video"></span>
+          </button>
+        </div>
+        <div class="col-md-1">
+          <button class="btn bg-transparent clear" (click)="deleteConversation()">
+            <span class="fas fa-trash"></span>
+          </button>
+        </div>
+      </div>
+    </div>
     <div #messagesList class="messages" [scrollTop]="messagesList.scrollHeight">
-      <div class="no-message" [hidden]="messages && messages.length > 0"> <!-- weird how hidden works here... :/ -->
+      <div class="no-message" [hidden]="messages && messages.length > 0">
+        <!-- weird how hidden works here... :/ -->
         <h5>You have no message with {{selConv.name}}...</h5>
         <p>Send your first message!</p>
       </div>
       <div class="message"
            [ngClass]="{'mine': message.isMine}"
            *ngFor="let message of messages">
+        <p class="sender" *ngIf="!message.isMine && selConv.participants.length > 2">
+          {{message.sender}}
+        </p>
         <p>{{message.text}}</p>
       </div>
     </div>
@@ -48,14 +70,17 @@
                  type="text"
                  placeholder="Input your message"
                  [(ngModel)]="message"
-                 (keyup.enter)="send()" />
+                 (keyup.enter)="send()"/>
         </div>
         <div class="col-md-1">
-          <button class="btn btn-primary" (click)="send()">
-            <span class="glyphicon glyphicon-send" aria-hidden="true"></span> Send
-          </button>
+          <button class="btn btn-primary" (click)="send()">Send</button>
         </div>
       </div>
     </div>
   </div>
+  <ng-template #noConvSel>
+    <div class="chats col-md-9">
+      <h2>Chat App</h2>
+    </div>
+  </ng-template>
 </div>

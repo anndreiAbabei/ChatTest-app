@@ -1,3 +1,4 @@
+using ChatTest.App.Hubs;
 using ChatTest.App.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,12 +11,12 @@ namespace ChatTest.App
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -25,17 +26,21 @@ namespace ChatTest.App
 
             services.AddMemoryCache();
 
+            services.AddSignalR();
+
             services.AddSingleton<IUserNameGenerator, UserNameGenerator>();
             services.AddSingleton<ITokenGenerator, TokenGenerator>();
+            services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<IConversationService, ConversationService>();
+            services.AddSingleton<IMessangesService, MessangesService>();
+            services.AddSingleton<ISeeder, ApplicationSeeder>();
         }
 
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISeeder seeder)
         {
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
             else
             {
                 app.UseExceptionHandler("/Error");
@@ -53,9 +58,8 @@ namespace ChatTest.App
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
+                endpoints.MapHub<ChatHub>("/hub");
             });
 
             app.UseSpa(spa =>
@@ -65,6 +69,8 @@ namespace ChatTest.App
                 if (env.IsDevelopment())
                     spa.UseAngularCliServer(npmScript: "start");
             });
+
+            seeder.Seed();
         }
     }
 }

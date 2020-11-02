@@ -1,6 +1,6 @@
-﻿/// <reference path="../../../../node_modules/@types/jasmine/index.d.ts" />
+/// <reference path="../../../../node_modules/@types/jasmine/index.d.ts" />
 import { TestBed, async, ComponentFixture, ComponentFixtureAutoDetect } from '@angular/core/testing';
-import { BrowserModule, By } from "@angular/platform-browser";
+import { BrowserModule, By } from '@angular/platform-browser';
 import { ChatComponent } from './chat.component';
 
 let component: ChatComponent;

@@ -6,9 +6,10 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class UserService {
   private user: User;
-  private static userCookieKey = "user";
+  private static userCookieKey = 'user';
 
-  constructor(private api: ApiService, private cookieService: CookieService) {
+  constructor(private readonly api: ApiService,
+              private readonly cookieService: CookieService) {
 
   }
 
@@ -39,7 +40,21 @@ export class UserService {
     this.cookieService.setCookie(UserService.userCookieKey, userJson, 31);
   }
 
-  public register(): Observable<User> {
-    return this.api.post<User>("Users/register", { id: "chat-app-test" });
+  public register(connectionId: string): Observable<User> {
+    return this.api.post<User>('Users/register',
+      {
+        id: 'chat-app-test',
+        connectionId: connectionId
+      });
+  }
+
+
+
+  public updateConnnectionId(name: string, connectionId: string): Observable<User> {
+    return this.api.put<User>(`Users/${name}`,
+      {
+        id: 'chat-app-test',
+        connectionId: connectionId
+      });
   }
 }

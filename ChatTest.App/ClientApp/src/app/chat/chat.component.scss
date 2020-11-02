@@ -65,7 +65,7 @@ div.row.chat-app {
         }
 
         &.offline {
-            color: red;
+          color: red;
         }
       }
     }
@@ -73,7 +73,7 @@ div.row.chat-app {
 
   div.chats {
 
-    &.online > h2.header {
+    &.online h2.header {
       margin-left: 0.7em;
 
       &::before {
@@ -81,7 +81,7 @@ div.row.chat-app {
         color: forestgreen;
         position: absolute;
         font-size: 1.5em;
-        top: -.3em;
+        top: -.2em;
         left: .3em;
       }
     }
@@ -128,6 +128,11 @@ div.row.chat-app {
         p {
           color: white;
           margin-bottom: 0;
+        }
+
+        p.sender {
+          color: #e8e8e8;
+          font-size: 12px;
         }
       }
     }

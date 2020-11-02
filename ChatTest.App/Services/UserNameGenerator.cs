@@ -6,7 +6,7 @@ namespace ChatTest.App.Services
 {
     public class UserNameGenerator : IUserNameGenerator
     {
-        private static readonly ConcurrentStack<string> _usernames;
+        private static readonly ConcurrentStack<string> Usernames;
 
         static UserNameGenerator()
         {
@@ -66,9 +66,9 @@ namespace ChatTest.App.Services
                 "lieethiopian"
             };
 
-            _usernames = new ConcurrentStack<string>(list);
+            Usernames = new ConcurrentStack<string>(list);
         }
 
-        public string Generate() => _usernames.TryPop(out var name) ? name : throw new InvalidOperationException("No usernames left");
+        public string Generate() => Usernames.TryPop(out var name) ? name : throw new InvalidOperationException("No usernames left");
     }
 }
