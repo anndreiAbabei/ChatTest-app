@@ -58,6 +58,13 @@ namespace ChatTest.App.Services
 
 
 
+        public IEnumerable<User> GetAll()
+        {
+            return _cache.Get<IList<User>>(UsersCacheKey);
+        }
+
+
+
         public void Register(User user)
         {
             if(user == null)

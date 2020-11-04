@@ -27,27 +27,47 @@ div.row.chat-app {
       }
     }
 
-    button.conversation {
-      text-align: left;
+    div.list-group {
+      max-height: calc(100% - 13rem);
+      overflow-y: auto;
 
-      &.unread {
+      button.conversation {
+        text-align: left;
+
         h4, p {
-          font-weight: bold;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
         }
 
-        h4::before {
-          content: '•';
-          color: dodgerblue
+        h4 {
+          -webkit-line-clamp: 2;
         }
-      }
 
-      &:focus {
-        outline-color: transparent
-      }
+        p {
+          -webkit-line-clamp: 1;
+        }
 
-      &.online:not(.active) {
-        border-left-width: 2px;
-        border-left-color: forestgreen;
+        &.unread {
+          h4, p {
+            font-weight: bold;
+          }
+
+          h4::before {
+            content: '•';
+            color: dodgerblue
+          }
+        }
+
+        &:focus {
+          outline-color: transparent
+        }
+
+        &.online:not(.active) {
+          border-left-width: 2px;
+          border-left-color: forestgreen;
+        }
       }
     }
 
@@ -73,6 +93,20 @@ div.row.chat-app {
 
   div.chats {
 
+    div.header-chat {
+      border-bottom: solid 1px black;
+      margin-bottom: .7em;
+
+      div.actions > button {
+        float: right;
+      }
+
+      div.actions::after {
+        content: ' ';
+        clear: both
+      }
+    }
+
     &.online h2.header {
       margin-left: 0.7em;
 
@@ -87,7 +121,10 @@ div.row.chat-app {
     }
 
     h2.header {
-      margin-bottom: 1em;
+      margin-bottom: .3em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     div.messages {

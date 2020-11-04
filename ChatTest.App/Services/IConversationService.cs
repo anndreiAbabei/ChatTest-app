@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using ChatTest.App.Models;
 
 namespace ChatTest.App.Services
@@ -8,9 +10,9 @@ namespace ChatTest.App.Services
     {
         IEnumerable<ConversationModel> GetUserConversations(string userName);
         bool Exists(IEnumerable<string> participants, string name = null);
-        Conversation Create(string name, IEnumerable<string> participants, string userName);
+        ValueTask<Conversation> Create(string name, IEnumerable<string> participants, string userName, CancellationToken cancellationToken = default);
         Conversation Get(Guid conversationId, string userName);
-        void Delete(Guid conversationId);
+        ValueTask Delete(Guid conversationId, CancellationToken cancellationToken = default);
         void MarkAsRead(Guid conversationId, string userName);
     }
 }

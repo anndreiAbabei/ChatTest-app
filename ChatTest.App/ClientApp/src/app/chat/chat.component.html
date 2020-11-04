@@ -1,7 +1,9 @@
 <div class="row chat-app">
   <div class="conversations col-md-3">
     <h2 class="header">Conversations</h2>
-    <button class="btn btn-default add-conversation" type="button">+</button>
+    <button class="btn btn-default add-conversation" type="button" (click)="openCreateChat()">
+      <span class="fas fa-plus"></span>
+    </button>
     <div class="input-group search">
       <input class="form-control" type="text" placeholder="Search conversations..." [(ngModel)]="search" />
       <button class="btn bg-transparent clear" (click)="search = ''" [disabled]="!search || search.trim().length === 0">
@@ -31,19 +33,22 @@
   <div class="chats col-md-9"
        [ngClass]="{'online': selConv && selConv.online}"
        *ngIf="selConv; else noConvSel">
-    <div class="container-fluid">
+    <div class="container-fluid header-chat">
       <div class="row">
-        <div class="col-md-10">
-          <h2 class="header" *ngIf="selConv">{{selConv.name}} messages</h2>
+        <div class="col-md-9">
+          <h2 class="header" *ngIf="selConv">
+            {{selConv.name}} messages
+          </h2>
         </div>
-        <div class="col-md-1">
+        <div class="col-md-3 actions">
+          <button class="btn bg-transparent clear" (click)="deleteConversation()">
+            <span class="fas fa-trash"></span>
+          </button>
           <button class="btn bg-transparent clear" (click)="videoCall()">
             <span class="fas fa-video"></span>
           </button>
-        </div>
-        <div class="col-md-1">
-          <button class="btn bg-transparent clear" (click)="deleteConversation()">
-            <span class="fas fa-trash"></span>
+          <button class="btn bg-transparent clear" (click)="showInfo()">
+            <span class="fas fa-info"></span>
           </button>
         </div>
       </div>

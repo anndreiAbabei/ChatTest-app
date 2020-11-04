@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 using ChatTest.App.Models;
 using ChatTest.App.Services;
 using Microsoft.AspNetCore.Http;
@@ -54,8 +55,8 @@ namespace ChatTest.App.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public ActionResult<Conversation> Create([FromHeader(Name = "Authorisation")] string userToken,
-                                                 [FromBody, Required] ConversationCreateModel model)
+        public async Task<ActionResult<Conversation>> Create([FromHeader(Name = "Authorisation")] string userToken,
+                                                             [FromBody, Required] ConversationCreateModel model)
         {
             if (model == null)
                 return BadRequest("Missing create model");
@@ -82,7 +83,7 @@ namespace ChatTest.App.Controllers
             if (string.IsNullOrEmpty(model.Name))
                 model.Name = string.Join(", ", participants.Where(p => p != user.Name));
 
-            Conversation conversation = _conversationService.Create(model.Name, participants, user.Name);
+            Conversation conversation = await _conversationService.Create(model.Name, participants, user.Name, HttpContext.RequestAborted);
 
             return CreatedAtAction(nameof(MessagesController.Get),
                                    nameof(MessagesController),
@@ -123,7 +124,7 @@ namespace ChatTest.App.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Delete([FromHeader(Name = "Authorisation")] string userToken,
+        public async Task<IActionResult> Delete([FromHeader(Name = "Authorisation")] string userToken,
                                     [FromRoute] Guid conversationId)
         {
             User user = _userService.GetUserByToken(userToken);
@@ -139,7 +140,7 @@ namespace ChatTest.App.Controllers
             if (!conv.Participants.Contains(user.Name))
                 return Unauthorized();
 
-            _conversationService.Delete(conversationId);
+            await _conversationService.Delete(conversationId);
 
             return NoContent();
         }

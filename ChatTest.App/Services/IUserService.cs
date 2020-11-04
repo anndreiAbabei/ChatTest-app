@@ -1,4 +1,5 @@
-﻿using ChatTest.App.Models;
+﻿using System.Collections.Generic;
+using ChatTest.App.Models;
 
 namespace ChatTest.App.Services
 {
@@ -7,6 +8,7 @@ namespace ChatTest.App.Services
         User GetUser(string userName);
         User GetUserByToken(string userToken);
         User GetUserByConnection(string connectionId);
+        IEnumerable<User> GetAll();
         void Register(User user);
         void Remove(string userName);
         bool IsValid(User user);

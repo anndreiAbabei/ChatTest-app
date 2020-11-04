@@ -5,7 +5,6 @@ namespace ChatTest.App.Models
 {
     public class ConversationCreateModel
     {
-        [Required]
         public string Name { get; set; }
 
         [Required]

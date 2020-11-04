@@ -32,6 +32,18 @@ export class UserService {
     return JSON.parse(cookie);
   }
 
+
+
+  public getAll(): Observable<UserModel[]> {
+    if (!this.api.authentication) {
+      const user = this.getUser();
+      if(user)
+        this.api.authentication = user.token;
+    }
+
+    return this.api.get<UserModel[]>('Users');
+  }
+
   public save(user: User): void {
     this.user = user;
 

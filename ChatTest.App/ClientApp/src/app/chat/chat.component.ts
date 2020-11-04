@@ -3,6 +3,8 @@ import { UserService } from '../services/user.service';
 import { ConversationService } from '../services/conversation.service';
 import { MessagesService } from '../services/messages.service';
 import { HubService } from '../services/hub.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ChatAddComponent } from '../chat-add/chat-add.component';
 
 @Component({
   selector: 'app-chat',
@@ -23,7 +25,8 @@ export class ChatComponent implements OnInit {
   constructor(private readonly userService: UserService,
               private readonly conversationService: ConversationService,
               private readonly messagesService: MessagesService,
-              private readonly hub: HubService) {
+              private readonly hub: HubService,
+              private readonly modalService: NgbModal) {
     this.online = true;
 
     this.conversations = [];
@@ -49,8 +52,7 @@ export class ChatComponent implements OnInit {
     if (this.selConv.messages) {
       this.messages = this.selConv.messages;
       this.markConversationRead(this.selConv);
-    }
-    else {
+    } else {
       const selConv = this.selConv;
       this.messagesService.getAll(selConv.id)
         .subscribe(m => {
@@ -68,25 +70,28 @@ export class ChatComponent implements OnInit {
       return;
 
     this.messagesService.send(this.selConv.id, this.message)
-    .subscribe(() => {
+      .subscribe(() => {
+        const message = <Message>{
+          conversationId: this.selConv.id,
+          id: '',
+          sender: this.user.name,
+          createdAt: new Date(Date.now()),
+          text: this.message,
+          isMine: true
+        };
 
-      this.messages.push({
-        conversationId: this.selConv.id,
-        id: '',
-        sender: this.user.name,
-        createdAt: new Date(Date.now()),
-        text: this.message,
-        isMine: true
+        this.messages.push(message);
+
+        this.fillEmptyConversationText(this.selConv, message);
+
+        this.message = '';
       });
-
-      this.message = '';
-    });
   }
 
 
-  public videoCall(): void {
 
-  }
+  public videoCall(): void {}
+
 
 
   public deleteConversation(): void {
@@ -98,12 +103,27 @@ export class ChatComponent implements OnInit {
       .subscribe(() => {
         this.conversations = this.conversations.filter(c => c.id !== selConv.id);
 
-        if(this.conversations.length > 0)
+        if (this.conversations.length > 0)
           this.select(this.conversations[0]);
         else
           this.select(null);
       });
   }
+
+
+
+  public openCreateChat(): void {
+    this.modalService.open(ChatAddComponent)
+      .result
+      .then(c => this.conversations.push(c));
+  }
+
+  public showInfo(): void {
+    if(this.selConv)
+      alert(`${this.selConv.name}\n\nParticipants: ${this.selConv.participants.join(', ')}`);
+  }
+
+
 
   private loadConversations(): void {
 
@@ -114,15 +134,14 @@ export class ChatComponent implements OnInit {
         if (!this.selConv && this.conversations.length > 0) {
           const lastConvId = this.conversationService.getLastConversation();
 
-          if(lastConvId) {
+          if (lastConvId) {
             let conv = this.conversations.find(fc => fc.id === lastConvId);
 
             if (!conv)
               conv = this.conversations[0];
 
             this.select(conv);
-          }
-          else
+          } else
             this.select(this.conversations[0]);
         }
       });
@@ -133,23 +152,6 @@ export class ChatComponent implements OnInit {
   private markConversationRead(conversation: Conversation) {
     this.conversationService.markConversationRead(conversation.id)
       .subscribe(() => conversation.read = true);
-  }
-
-  private handleMessage(message: Message): void {
-    if (message.sender === this.user.name)
-      return;
-
-    if (this.selConv && message.conversationId === this.selConv.id)
-      this.messages.push(message);
-    else {
-      const conv = this.conversations.find(c => c.id === message.conversationId);
-
-      if (conv) {
-        conv.messages.push(message);
-        conv.read = false;
-        conv.text = message.text;
-      }
-    }
   }
 
 
@@ -167,6 +169,8 @@ export class ChatComponent implements OnInit {
 
   private initializeApplication(): void {
     this.hub.onMessageRecieved(m => this.handleMessage(m));
+    this.hub.onConversationRecieved(c => this.handleConversation(c));
+    this.hub.onConversationRemovedRecieved(cid => this.handleConversationRemoved(cid));
     this.hub.onUserConnected(u => this.handleConnection(u, true));
     this.hub.onUserDisconnected(u => this.handleConnection(u, false));
 
@@ -177,6 +181,50 @@ export class ChatComponent implements OnInit {
       this.userService.updateConnnectionId(this.user.name, this.hub.getConnectionId())
         .subscribe(u => this.updateUser(u));
     }
+  }
+
+
+
+  private handleMessage(message: Message): void {
+    if (message.sender === this.user.name)
+      return;
+
+    let conv: Conversation;
+
+    if (this.selConv && message.conversationId === this.selConv.id) {
+      this.messages.push(message);
+      conv = this.selConv;
+    }
+    else {
+      conv = this.conversations.find(c => c.id === message.conversationId);
+
+      if (conv) {
+        conv.messages.push(message);
+        conv.read = false;
+        conv.text = message.text;
+      }
+    }
+
+    this.fillEmptyConversationText(conv, message);
+  }
+
+  private fillEmptyConversationText(conversation: Conversation, message: Message) {
+    if(conversation && message && conversation.id === message.conversationId)
+      conversation.text = message.text;
+  }
+
+
+
+  private handleConversation(conversation: Conversation): void {
+    if(conversation.createdBy !== this.user.name && conversation.participants.find(p => p === this.user.name))
+      this.conversations.push(conversation);
+  }
+
+  private handleConversationRemoved(conversationId: string): void {
+    this.conversations = this.conversations.filter(c => c.id !== conversationId);
+
+    if(this.selConv && this.selConv.id === conversationId)
+      this.select(null);
   }
 
 

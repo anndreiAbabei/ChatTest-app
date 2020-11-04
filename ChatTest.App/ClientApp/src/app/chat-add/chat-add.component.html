@@ -1,0 +1,36 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-basic-title">Create conversation</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('cross')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="form-group">
+    <div class="alert alert-info" role="alert" *ngIf="error">
+      <b>Error:</b>
+      {{error}}
+    </div>
+    <input class="form-control" placeholder="Conversation name..." [(ngModel)]="conversationName">
+    <label>Members</label>
+    <div *ngIf="haveSelectedMembers()" class="selected-members">
+      <div *ngFor="let member of selectedMembers()" class="member"
+           data-toggle="tooltip" data-placement="top" [title]="member.name"
+           [ngClass]="{'online': member.online}">
+        <span>{{getMemberInitials(member)}}</span>
+      </div>
+    </div>
+    <input class="form-control search" placeholder="Search..." [(ngModel)]="searchMembers" />
+    <div class="list-group members">
+      <button class="list-group-item"
+              [ngClass]="{'active': member.selected, 'online': member.online}"
+              *ngFor="let member of members | search:'name':searchMembers"
+              (click)="member.selected = !member.selected">
+        <p class="list-group-item-text">{{member.name}}</p>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-dark" (click)="activeModal.dismiss('close')">Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="save()">Save</button>
+</div>

@@ -1,0 +1,50 @@
+$avatarSize: 10rem;
+
+div.selected-members {
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  margin-bottom: 1em;
+
+  div.member {
+    background-color: gray;
+    border-radius: 50%;
+    height: 5rem;
+    width: 5rem;
+    text-align: center;
+    margin-right: .5em;
+    display: inline-block;
+    border: solid 3px transparent;
+
+    &.online {
+      border-color: forestgreen
+    }
+
+    span {
+      color: white;
+      font-size: calc(5rem / 2); /* 50% of parent */
+      line-height: 1;
+      position: relative;
+      top: calc(5rem / 4 - 3px); /* 25% of parent */
+    }
+  }
+
+  &::after {
+    content: ' ';
+    clear: both;
+  }
+}
+
+input.search {
+    margin: .5em 0;
+}
+
+div.members {
+  height: 40vh;
+  max-height: 40vh;
+  overflow-y: scroll;
+
+  button.online{
+      border-left: solid 3px forestgreen
+  }
+}

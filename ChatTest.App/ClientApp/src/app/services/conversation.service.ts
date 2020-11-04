@@ -38,6 +38,24 @@ export class ConversationService {
 
 
 
+    public create(name: string, users: string[]): Observable<any> {
+      const user = this.userService.getUser();
+
+      if(user) {
+        if (!this.api.authentication) 
+          this.api.authentication = user.token;
+
+        users.push(user.name);
+      }
+
+      return this.api.post('Conversation', {
+        name: name,
+        participants: users
+      });
+    }
+
+
+
     public delete(id: string): Observable<any> {
       if (!this.api.authentication) {
         const user = this.userService.getUser();

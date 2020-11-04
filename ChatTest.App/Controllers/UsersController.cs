@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using ChatTest.App.Models;
 using ChatTest.App.Services;
 using Microsoft.AspNetCore.Http;
@@ -22,6 +24,34 @@ namespace ChatTest.App.Controllers
             _userService = userService;
             _tokenGenerator = tokenGenerator;
             _userNameGenerator = userNameGenerator;
+        }
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public ActionResult<IEnumerable<UserModel>> GetAll([FromHeader(Name = "Authorisation")] string userToken)
+        {
+            User user = _userService.GetUserByToken(userToken);
+
+            if (user == null || !_userService.IsValid(user))
+                return Unauthorized();
+            
+            IEnumerable<User> users = _userService.GetAll();
+
+            IEnumerable<UserModel> result = _userNameGenerator
+                                               .All.Where(n => n != user.Name)
+                                               .Select((n, i) => (Name: n
+                                                                , Index: i))
+                                               .OrderByDescending(t => t.Index)
+                                               .Select(t => new UserModel
+                                                            {
+                                                                Name = t.Name,
+                                                                Online = users.FirstOrDefault(u => u.Name == t.Name)?
+                                                                            .Online ?? false
+                                                            })
+                                               .OrderByDescending(u => u.Online);
+                
+            return Ok(result);
         }
 
         [HttpPost("register")]

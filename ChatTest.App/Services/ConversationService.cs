@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using ChatTest.App.Hubs;
 using ChatTest.App.Models;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace ChatTest.App.Services
@@ -10,15 +14,17 @@ namespace ChatTest.App.Services
     {
         private readonly IMemoryCache _cache;
         private readonly IUserService _userService;
+        private readonly IHubContext<ChatHub> _hubContext;
         private const string ConversationsCacheKey = "conversations";
         private static readonly object SyncRoot = new object();
 
 
 
-        public ConversationService(IMemoryCache cache, IUserService userService)
+        public ConversationService(IMemoryCache cache, IUserService userService, IHubContext<ChatHub> hubContext)
         {
             _cache = cache;
             _userService = userService;
+            _hubContext = hubContext;
         }
 
 
@@ -48,9 +54,16 @@ namespace ChatTest.App.Services
         public bool Exists(IEnumerable<string> participants, string userName = null)
         {
             IList<Conversation> conversations = GetConversations();
+            IList<string> testPart = participants as IList<string> ?? participants.ToList();
 
-            return conversations.Any(c => c.Participants.SequenceEqual(participants) &&
-                                          (string.IsNullOrEmpty(userName) || c.Name == userName));
+            return conversations.Any(c =>
+            {
+                IList<string> convParts = c.Participants as IList<string> ?? c.Participants.ToList();
+
+                return convParts.Count == testPart.Count && 
+                       convParts.All(testPart.Contains) &&
+                       (string.IsNullOrEmpty(userName) || c.Name == userName);
+            });
         }
 
 
@@ -63,7 +76,10 @@ namespace ChatTest.App.Services
 
 
 
-        public Conversation Create(string name, IEnumerable<string> participants, string userName)
+        public async ValueTask<Conversation> Create(string name, 
+                                                    IEnumerable<string> participants, 
+                                                    string userName, 
+                                                    CancellationToken cancellationToken = default)
         {
             var newConv = new Conversation
                           {
@@ -75,6 +91,9 @@ namespace ChatTest.App.Services
                           };
 
             GetConversations().Add(newConv);
+
+            await _hubContext.Clients.All.SendAsync(ChatHub.SendMessageMethod, newConv, cancellationToken)
+                                      .ConfigureAwait(false);
 
             return newConv;
         }
@@ -88,13 +107,18 @@ namespace ChatTest.App.Services
 
 
 
-        public void Delete(Guid conversationId)
+        public async ValueTask Delete(Guid conversationId, CancellationToken cancellationToken = default)
         {
             IList<Conversation> conversations = GetConversations();
             Conversation conv = conversations.FirstOrDefault(c => c.Id == conversationId);
 
             if (conv != null)
+            {
                 conversations.Remove(conv);
+
+                await _hubContext.Clients.All.SendAsync(ChatHub.DeleteConversationMethod, conv.Id, cancellationToken)
+                                 .ConfigureAwait(false);
+            }
         }
 
 

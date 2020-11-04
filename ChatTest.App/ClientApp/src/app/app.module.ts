@@ -17,21 +17,28 @@ import { CookieService } from './services/cookie.service';
 import { ConversationService } from './services/conversation.service';
 import { MessagesService } from './services/messages.service';
 import { HubService } from './services/hub.service';
+import { NgbAlertModule, NgbPaginationModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ChatAddComponent } from './chat-add/chat-add.component';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
     AppComponent,
+    SearchPipe,
     NavMenuComponent,
     HomeComponent,
     CounterComponent,
     FetchDataComponent,
     ChatComponent,
-    SearchPipe
+    ChatAddComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
+    NgbPaginationModule,
+    NgbAlertModule,
+    NgbModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'counter', component: CounterComponent },
@@ -45,7 +52,11 @@ import { HubService } from './services/hub.service';
     CookieService,
     ConversationService,
     MessagesService,
-    HubService
+    HubService,
+    NgbActiveModal
+  ],
+  entryComponents: [
+    ChatAddComponent
   ],
   bootstrap: [AppComponent]
 })

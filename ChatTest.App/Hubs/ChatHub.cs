@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using ChatTest.App.Models;
 using ChatTest.App.Services;
 using Microsoft.AspNetCore.SignalR;
 
@@ -12,6 +9,8 @@ namespace ChatTest.App.Hubs
     {
         private readonly IUserService _userService;
         public const string SendMessageMethod = "messageReceived";
+        public const string NewConversationMethod = "conversationRecieved";
+        public const string DeleteConversationMethod = "conversationRemoved";
         public const string UserConnectedMethod = "userConnected";
         public const string UserDisconnectedMethod = "userDisconnected";
 
