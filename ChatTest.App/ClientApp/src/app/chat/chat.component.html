@@ -44,7 +44,7 @@
           <button class="btn bg-transparent clear" (click)="deleteConversation()">
             <span class="fas fa-trash"></span>
           </button>
-          <button class="btn bg-transparent clear" (click)="videoCall()">
+          <button class="btn bg-transparent clear" (click)="videoCall()" [disabled]="selConv.participants.length > 2 || !selConv.online">
             <span class="fas fa-video"></span>
           </button>
           <button class="btn bg-transparent clear" (click)="showInfo()">
@@ -54,8 +54,8 @@
       </div>
     </div>
     <div #messagesList class="messages" [scrollTop]="messagesList.scrollHeight">
+      <!-- weird how hidden works here... :/ -->
       <div class="no-message" [hidden]="messages && messages.length > 0">
-        <!-- weird how hidden works here... :/ -->
         <h5>You have no message with {{selConv.name}}...</h5>
         <p>Send your first message!</p>
       </div>
