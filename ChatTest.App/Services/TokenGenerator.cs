@@ -52,6 +52,9 @@ namespace ChatTest.App.Services
 
         public string GetName(string token)
         {
+            if (string.IsNullOrEmpty(token))
+                throw new ArgumentNullException(nameof(token));
+
             return new JwtSecurityTokenHandler()
                   .ReadJwtToken(token)?
                   .Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.UniqueName)?
@@ -60,6 +63,9 @@ namespace ChatTest.App.Services
 
         public string GetConnectionId(string token)
         {
+            if (string.IsNullOrEmpty(token))
+                throw new ArgumentNullException(nameof(token));
+
             return new JwtSecurityTokenHandler()
                   .ReadJwtToken(token)?
                   .Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.NameId)?

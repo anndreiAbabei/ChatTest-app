@@ -11,7 +11,6 @@ namespace ChatTest.App.Services
         private readonly IMemoryCache _cache;
         private readonly ITokenGenerator _tokenGenerator;
         private const string UsersCacheKey = "users";
-        private static readonly object SyncRoot = new object();
 
 
         public UserService(IMemoryCache cache, ITokenGenerator tokenGenerator)
@@ -43,8 +42,6 @@ namespace ChatTest.App.Services
                        Token = userToken
                    };
 
-            Register(user);
-
             return user;
         }
 
@@ -65,43 +62,6 @@ namespace ChatTest.App.Services
 
 
 
-        public void Register(User user)
-        {
-            if(user == null)
-                throw new ArgumentNullException(nameof(user));
-
-            var users = _cache.Get<IList<User>>(UsersCacheKey);
-            User existingUser = users.FirstOrDefault(u => u.Name == user.Name);
-
-            if (existingUser != null)
-                users.Remove(existingUser);
-
-            users.Add(user);
-
-            user.Online = !string.IsNullOrEmpty(user.ConnectionId);
-        }
-
-
-
-        public void Remove(string userName)
-        {
-            var users = _cache.Get<IList<User>>(UsersCacheKey);
-            User user = users.FirstOrDefault(u => u.Name == userName);
-
-            if (user != null)
-                users.Remove(user);
-        }
-
-
-
         public bool IsValid(User user) => _tokenGenerator.IsValid(user.Token);
-
-
-
-        void ISeeder.Seed()
-        {
-            lock (SyncRoot)
-                _cache.Set<IList<User>>(UsersCacheKey, new List<User>());
-        }
     }
 }

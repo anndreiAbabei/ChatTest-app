@@ -17,7 +17,6 @@ namespace ChatTest.App.Services
         private readonly IUserService _userService;
         private readonly IHubContext<ChatHub> _hubContext;
         private const string MessangesCacheKey = "messages";
-        private static readonly object SyncRoot = new object();
 
 
 
@@ -88,94 +87,6 @@ namespace ChatTest.App.Services
         private IList<Message> GetMessages()
         {
             return _cache.Get<IList<Message>>(MessangesCacheKey);
-        }
-
-
-
-        void ISeeder.Seed()
-        {
-            lock (SyncRoot)
-            {
-                var list = new List<Message>();
-
-                if (Constants.Mock.UseMock)
-                {
-                    list.Add(new Message
-                             {
-                                 Id = Guid.NewGuid(),
-                                 CreatedAt = DateTime.UtcNow,
-                                 ConversationId = Constants.Mock.ConversationIds[0],
-                                 Sender = Constants.Mock.UserNames[1],
-                                 Text = "Heellloooo"
-                             });
-                    list.Add(new Message
-                             {
-                                 Id = Guid.NewGuid(),
-                                 CreatedAt = DateTime.UtcNow.AddSeconds(1),
-                                 ConversationId = Constants.Mock.ConversationIds[0],
-                                 Sender = Constants.Mock.UserNames[1],
-                                 Text = "Hi"
-                             });
-                    list.Add(new Message
-                             {
-                                 Id = Guid.NewGuid(),
-                                 CreatedAt = DateTime.UtcNow.AddSeconds(2),
-                                 ConversationId = Constants.Mock.ConversationIds[0],
-                                 Sender = Constants.Mock.UserNames[0],
-                                 Text = "What?"
-                             });
-                    list.Add(new Message
-                             {
-                                 Id = Guid.NewGuid(),
-                                 CreatedAt = DateTime.UtcNow.AddSeconds(3),
-                                 ConversationId = Constants.Mock.ConversationIds[0],
-                                 Sender = Constants.Mock.UserNames[1],
-                                 Text = "What are you doing tnit"
-                             });
-                    list.Add(new Message
-                             {
-                                 Id = Guid.NewGuid(),
-                                 CreatedAt = DateTime.UtcNow.AddSeconds(4),
-                                 ConversationId = Constants.Mock.ConversationIds[0],
-                                 Sender = Constants.Mock.UserNames[1],
-                                 Text = "tonight*"
-                             });
-                    list.Add(new Message
-                             {
-                                 Id = Guid.NewGuid(),
-                                 CreatedAt = DateTime.UtcNow.AddSeconds(5),
-                                 ConversationId = Constants.Mock.ConversationIds[0],
-                                 Sender = Constants.Mock.UserNames[1],
-                                 Text = "?"
-                             });
-                    list.Add(new Message
-                             {
-                                 Id = Guid.NewGuid(),
-                                 CreatedAt = DateTime.UtcNow,
-                                 ConversationId = Constants.Mock.ConversationIds[2],
-                                 Sender = Constants.Mock.UserNames[0],
-                                 Text = "Guys?"
-                             });
-                    list.Add(new Message
-                             {
-                                 Id = Guid.NewGuid(),
-                                 CreatedAt = DateTime.UtcNow.AddSeconds(1),
-                                 ConversationId = Constants.Mock.ConversationIds[2],
-                                 Sender = Constants.Mock.UserNames[2],
-                                 Text = "Yup?"
-                             });
-                    list.Add(new Message
-                             {
-                                 Id = Guid.NewGuid(),
-                                 CreatedAt = DateTime.UtcNow.AddSeconds(2),
-                                 ConversationId = Constants.Mock.ConversationIds[2],
-                                 Sender = Constants.Mock.UserNames[1],
-                                 Text = "Yea"
-                             });
-                }
-
-                _cache.Set<IList<Message>>(MessangesCacheKey, list);
-            }
         }
     }
 }

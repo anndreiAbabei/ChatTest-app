@@ -28,16 +28,14 @@ namespace ChatTest.App
 
             services.AddSignalR();
 
-            services.AddSingleton<IUserNameGenerator, UserNameGenerator>();
             services.AddSingleton<ITokenGenerator, TokenGenerator>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IConversationService, ConversationService>();
             services.AddSingleton<IMessangesService, MessangesService>();
-            services.AddSingleton<ISeeder, ApplicationSeeder>();
         }
 
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISeeder seeder)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
@@ -61,16 +59,6 @@ namespace ChatTest.App
                 endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
                 endpoints.MapHub<ChatHub>("/hub");
             });
-
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "ClientApp";
-
-                if (env.IsDevelopment())
-                    spa.UseAngularCliServer(npmScript: "start");
-            });
-
-            seeder.Seed();
         }
     }
 }

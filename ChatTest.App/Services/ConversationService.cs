@@ -16,7 +16,6 @@ namespace ChatTest.App.Services
         private readonly IUserService _userService;
         private readonly IHubContext<ChatHub> _hubContext;
         private const string ConversationsCacheKey = "conversations";
-        private static readonly object SyncRoot = new object();
 
 
 
@@ -142,69 +141,6 @@ namespace ChatTest.App.Services
         private IList<Conversation> GetConversations()
         {
             return _cache.Get<IList<Conversation>>(ConversationsCacheKey);
-        }
-
-
-
-        void ISeeder.Seed()
-        {
-            lock (SyncRoot)
-            {
-                var list = new List<Conversation>();
-                if (Constants.Mock.UseMock)
-                {
-
-                    list.Add(new Conversation
-                             {
-                                 Id = Constants.Mock.ConversationIds[0],
-                                 CreatedAt = DateTime.UtcNow,
-                                 CreatedBy = Constants.Mock.UserNames[0],
-                                 Participants = new []
-                                                {
-                                                    Constants.Mock.UserNames[0],
-                                                    Constants.Mock.UserNames[1]
-                                                }
-                             });
-
-                    list.Add(new Conversation
-                             {
-                                 Id = Constants.Mock.ConversationIds[1],
-                                 CreatedAt = DateTime.UtcNow,
-                                 CreatedBy = Constants.Mock.UserNames[0],
-                                 Participants = new []
-                                                {
-                                                    Constants.Mock.UserNames[0],
-                                                    Constants.Mock.UserNames[2]
-                                                }
-                             });
-
-                    list.Add(new Conversation
-                             {
-                                 Id = Constants.Mock.ConversationIds[2],
-                                 CreatedAt = DateTime.UtcNow,
-                                 CreatedBy = Constants.Mock.UserNames[0],
-                                 Participants = new []
-                                                {
-                                                    Constants.Mock.UserNames[0],
-                                                    Constants.Mock.UserNames[1],
-                                                    Constants.Mock.UserNames[2]
-                                                }
-                             });
-
-                    list.Add(new Conversation
-                             {
-                                 Id = Constants.Mock.ConversationIds[3],
-                                 CreatedAt = DateTime.UtcNow,
-                                 CreatedBy = Constants.Mock.UserNames[1],
-                                 Participants = new []
-                                                {
-                                                    Constants.Mock.UserNames[1],
-                                                    Constants.Mock.UserNames[3]
-                                                }
-                             });
-                }
-                _cache.Set<IList<Conversation>>(ConversationsCacheKey, list);
-            }
         }
     }
 }

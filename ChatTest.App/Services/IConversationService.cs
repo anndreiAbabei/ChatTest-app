@@ -6,7 +6,7 @@ using ChatTest.App.Models;
 
 namespace ChatTest.App.Services
 {
-    public interface IConversationService : ISeeder
+    public interface IConversationService
     {
         IEnumerable<ConversationModel> GetUserConversations(string userName);
         bool Exists(IEnumerable<string> participants, string name = null);

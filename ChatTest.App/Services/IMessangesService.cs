@@ -6,7 +6,7 @@ using ChatTest.App.Models;
 
 namespace ChatTest.App.Services
 {
-    public interface IMessangesService : ISeeder
+    public interface IMessangesService
     {
         IEnumerable<MessageModel> GetMessages(Guid conversationId, string userName);
         ValueTask Create(string userName, Guid conversationId, string text, CancellationToken cancellationToken = default);
